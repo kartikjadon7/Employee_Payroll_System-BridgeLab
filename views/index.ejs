@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Payroll Dashboard | EPS BridgeLab</title>
+  <meta name="description" content="Employee Payroll Management Dashboard - View all employee records with tax and net salary calculations."/>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+
+  <!-- Header -->
+  <header class="header">
+    <div class="header-inner">
+      <div class="brand">
+        <div class="brand-icon">💼</div>
+        <div>
+          <h1 class="brand-title">PayrollPro</h1>
+          <p class="brand-sub">Employee Management System</p>
+        </div>
+      </div>
+      <a href="/add" class="btn btn-primary" id="add-employee-btn">
+        <span>＋</span> Add Employee
+      </a>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="main">
+
+    <!-- Stats Cards -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-icon">👥</div>
+        <div class="stat-info">
+          <span class="stat-value"><%= employees.length %></span>
+          <span class="stat-label">Total Employees</span>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon">💰</div>
+        <div class="stat-info">
+          <span class="stat-value">₹<%= employees.reduce((s, e) => s + e.basicSalary, 0).toLocaleString('en-IN') %></span>
+          <span class="stat-label">Total Gross Payroll</span>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon">🧾</div>
+        <div class="stat-info">
+          <span class="stat-value">₹<%= Math.round(employees.reduce((s, e) => s + e.basicSalary * 0.12, 0)).toLocaleString('en-IN') %></span>
+          <span class="stat-label">Total Tax (12%)</span>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon">✅</div>
+        <div class="stat-info">
+          <span class="stat-value">₹<%= Math.round(employees.reduce((s, e) => s + (e.basicSalary - e.basicSalary * 0.12), 0)).toLocaleString('en-IN') %></span>
+          <span class="stat-label">Total Net Payroll</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Table Section -->
+    <div class="table-card">
+      <div class="table-header">
+        <h2 class="table-title">Employee Records</h2>
+        <span class="badge"><%= employees.length %> records</span>
+      </div>
+
+      <% if (employees.length === 0) { %>
+        <div class="empty-state">
+          <div class="empty-icon">📋</div>
+          <p>No employees found. <a href="/add">Add your first employee</a>.</p>
+        </div>
+      <% } else { %>
+      <div class="table-wrapper">
+        <table id="employee-table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Name</th>
+              <th>Department</th>
+              <th>Basic Salary</th>
+              <th>Tax (12%)</th>
+              <th>Net Salary</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% employees.forEach((emp, index) => {
+                let tax = emp.basicSalary * 0.12;
+                let netSalary = emp.basicSalary - tax;
+            %>
+            <tr>
+              <td><span class="row-num"><%= index + 1 %></span></td>
+              <td>
+                <div class="emp-name-cell">
+                  <div class="emp-avatar"><%= emp.name.charAt(0).toUpperCase() %></div>
+                  <span class="emp-name"><%= emp.name %></span>
+                </div>
+              </td>
+              <td><span class="dept-badge"><%= emp.department %></span></td>
+              <td class="salary-cell">₹ <%= emp.basicSalary.toLocaleString('en-IN') %></td>
+              <td class="tax-cell">₹ <%= tax.toLocaleString('en-IN') %></td>
+              <td class="net-cell">₹ <%= netSalary.toLocaleString('en-IN') %></td>
+              <td class="actions-cell">
+                <a href="/edit/<%= emp.id %>" class="btn-action btn-edit" title="Edit">✏️ Edit</a>
+                <a href="/delete/<%= emp.id %>" class="btn-action btn-delete" title="Delete"
+                   onclick="return confirm('Delete <%= emp.name %>? This cannot be undone.')">🗑️ Delete</a>
+              </td>
+            </tr>
+            <% }) %>
+          </tbody>
+        </table>
+      </div>
+      <% } %>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <p>© 2025 PayrollPro · EPS BridgeLab · Built with Node.js &amp; Express</p>
+  </footer>
+
+</body>
+</html>

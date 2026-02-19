@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Edit Employee | PayrollPro</title>
+  <meta name="description" content="Update employee details in the payroll system." />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/style.css">
+</head>
+
+<body>
+
+  <!-- Header -->
+  <header class="header">
+    <div class="header-inner">
+      <div class="brand">
+        <div class="brand-icon">💼</div>
+        <div>
+          <h1 class="brand-title">PayrollPro</h1>
+          <p class="brand-sub">Employee Management System</p>
+        </div>
+      </div>
+      <a href="/" class="btn btn-secondary">← Back to Dashboard</a>
+    </div>
+  </header>
+
+  <main class="main">
+    <div class="form-card">
+      <div class="form-header">
+        <div class="form-icon">✏️</div>
+        <h2 class="form-title">Edit Employee</h2>
+        <p class="form-subtitle">Update the details for <strong>
+            <%= employee.name %>
+          </strong>.</p>
+      </div>
+
+      <% if (error) { %>
+        <div class="alert alert-error" id="error-alert">
+          <span class="alert-icon">⚠️</span>
+          <span>
+            <%= error %>
+          </span>
+        </div>
+        <% } %>
+
+          <form action="/edit/<%= employee.id %>" method="POST" class="emp-form" id="edit-employee-form" novalidate>
+
+            <div class="form-group">
+              <label for="name" class="form-label">Full Name <span class="required">*</span></label>
+              <input type="text" id="name" name="name" class="form-input" value="<%= employee.name %>" required
+                autocomplete="off" />
+            </div>
+
+            <div class="form-group">
+              <label for="department" class="form-label">Department <span class="required">*</span></label>
+              <select id="department" name="department" class="form-input form-select">
+                <% const depts=['IT','HR','Finance','Marketing','Operations','Sales','Legal','General']; %>
+                  <% depts.forEach(d=> { %>
+                    <option value="<%= d %>" <%=employee.department===d ? 'selected' : '' %>><%= d %>
+                    </option>
+                    <% }) %>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="basicSalary" class="form-label">Basic Salary (₹) <span class="required">*</span></label>
+              <input type="number" id="basicSalary" name="basicSalary" class="form-input"
+                value="<%= employee.basicSalary %>" min="0" step="100" required />
+              <div class="salary-preview" id="salary-preview">
+                <div class="preview-row"><span>Tax (12%):</span> <strong id="preview-tax">₹<%= (employee.basicSalary *
+                      0.12).toLocaleString('en-IN') %></strong></div>
+                <div class="preview-row"><span>Net Salary:</span> <strong id="preview-net">₹<%= (employee.basicSalary *
+                      0.88).toLocaleString('en-IN') %></strong></div>
+              </div>
+            </div>
+
+            <div class="form-actions">
+              <a href="/" class="btn btn-secondary">Cancel</a>
+              <button type="submit" class="btn btn-primary" id="update-btn">Update Employee</button>
+            </div>
+          </form>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <p>© 2025 PayrollPro · EPS BridgeLab · Built with Node.js &amp; Express</p>
+  </footer>
+
+  <script>
+    // Live salary preview
+    const salaryInput = document.getElementById('basicSalary');
+    const preview = document.getElementById('salary-preview');
+    const previewTax = document.getElementById('preview-tax');
+    const previewNet = document.getElementById('preview-net');
+
+    salaryInput.addEventListener('input', () => {
+      const val = parseFloat(salaryInput.value);
+      if (!isNaN(val) && val >= 0) {
+        const tax = val * 0.12;
+        const net = val - tax;
+        previewTax.textContent = '₹' + tax.toLocaleString('en-IN');
+        previewNet.textContent = '₹' + net.toLocaleString('en-IN');
+        preview.style.display = 'block';
+      } else {
+        preview.style.display = 'none';
+      }
+    });
+  </script>
+
+</body>
+
+</html>
